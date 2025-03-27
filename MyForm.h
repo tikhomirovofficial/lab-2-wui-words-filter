@@ -175,28 +175,51 @@ namespace Program2 {
 		}
 	private: System::Void executeBtn_Click(System::Object^ sender, System::EventArgs^ e) {
 		String^ inputValue = this->wordsInput->Text;
-		int maxLengthValue = Convert::ToInt32(this->textBox1->Text);
-		array<String^>^ splitted = inputValue->Split(',', ' ');
+		String^ maxLengthInputVal = this->textBox1->Text;
+		
+		int maxLength = 0;
 
-		if (!splitted->Length) {
-			MessageBox::Show("Пожалуйста, введите перечислите слова через запятую!");
+		if (!Int32::TryParse(maxLengthInputVal, maxLength)) {
+			MessageBox::Show("Некорректная длина слова! Введите число!", "Ошибка");
 			return;
 		}
 
-		//String^ *result = new String[];
-		
-		/*int currentIndex = 0;
+		array<String^>^ splitted = inputValue->Split(',', ' ');
+
+		if (!splitted->Length) {
+			MessageBox::Show("Пожалуйста, введите перечислите слова через запятую!", "Ошибка");
+			return;
+		}
+
+		int suitableWordsCount = 0;
+
 		for (int wordIndex = 0; wordIndex < splitted->Length; wordIndex++)
 		{
-			Console::WriteLine(splitted[wordIndex]->Length);
-			if (splitted[wordIndex]->Length < maxLengthValue) {
-				Console::WriteLine(splitted[wordIndex]);
-				result[currentIndex] = splitted[wordIndex];
-				currentIndex++;
+			if (splitted[wordIndex]->Length < maxLength && splitted[wordIndex]->Length) {
+				suitableWordsCount++;
 			}
-		}*/
-		//MessageBox::Show(String::Join(", ", result));
+		}
 
+		array<String^>^ filteredWords = gcnew array<String^>(suitableWordsCount);
+
+		int currentFilterIndex = 0;
+
+		for (int wordIndex = 0; wordIndex < splitted->Length; wordIndex++)
+		{
+			String^ currentWord = splitted[wordIndex];
+			if (currentWord->Length < maxLength && currentWord->Length) {
+				filteredWords[currentFilterIndex] = currentWord;
+				currentFilterIndex++;
+			}
+		}
+
+		if (!currentFilterIndex) {
+			MessageBox::Show("Подходящих слов не найдено!", "Фильтр");
+			return;
+		}
+
+		String^ resultsString = String::Join(", ", filteredWords);
+		MessageBox::Show(resultsString, "Фильтр");
 	}
 };
 }
